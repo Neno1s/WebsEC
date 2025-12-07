@@ -1,0 +1,58 @@
+import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Plus, Check } from "lucide-react";
+
+export default function SnapListApp() {
+  const [items, setItems] = useState([]);
+  const [input, setInput] = useState("");
+  const [image, setImage] = useState(null);
+
+  const addItem = () => {
+    if (input.trim() !== "") {
+      setItems([...items, { text: input, done: false }]);
+      setInput("");
+    }
+  };
+
+  const toggleItem = (index) => {
+    const updatedItems = [...items];
+    updatedItems[index].done = !updatedItems[index].done;
+    setItems(updatedItems);
+  };
+
+  const handleImageUpload = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setImage(URL.createObjectURL(e.target.files[0]));
+    }
+  };
+
+  return (
+    <div className="p-4 max-w-md mx-auto">
+      <h1 className="text-2xl font-bold mb-4">SnapList</h1>
+      <Input type="file" accept="image/*" onChange={handleImageUpload} className="mb-4" />
+      {image && <img src={image} alt="Uploaded" className="w-full h-auto rounded-xl mb-4" />}
+      <div className="flex gap-2 mb-4">
+        <Input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Type an item..."
+        />
+        <Button onClick={addItem}>
+          <Plus size={16} />
+        </Button>
+      </div>
+      <div className="space-y-2">
+        {items.map((item, index) => (
+          <Card key={index} onClick={() => toggleItem(index)} className={`cursor-pointer ${item.done ? 'bg-green-100' : ''}`}>
+            <CardContent className="p-2 flex items-center gap-2">
+              <Check size={16} className={`${item.done ? 'text-green-600' : 'text-gray-400'}`} />
+              <span className={`${item.done ? 'line-through' : ''}`}>{item.text}</span>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+} 
